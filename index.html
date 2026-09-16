@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>インフラエンジニア向けテトリス v2 | INFRA QUEST ARCADE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient-start: #040c12;
+      --bg-gradient-end: #091f17;
+      --card-bg: #0d171c;
+      --card-border: #1e293b;
+      --arcade-bg: #040a07;
+      --arcade-accent: #4ade80;
+      --arcade-gold: #facc15;
+      --arcade-cyan: #38bdf8;
+      --arcade-red: #ef4444;
+      --primary: #16a34a;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 40px;
+      font-family: 'JetBrains Mono', 'Outfit', 'Noto Sans JP', monospace;
+      background: radial-gradient(circle at 50% 25%, #0f3d29 0%, transparent 60%),
+                  linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: #f1f5f9;
+    }
+
+    /* Top Application Header */
+    .app-header {
+      width: 100%;
+      max-width: 1120px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding: 14px 24px;
+      background: rgba(13, 23, 28, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(74, 222, 128, 0.4);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon-svg {
+      width: 36px;
+      height: 36px;
+      fill: none;
+    }
+
+    .logo-text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-main {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.95rem;
+      color: var(--arcade-accent);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 12px rgba(74, 222, 128, 0.8);
+    }
+
+    .logo-sub {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .header-clock-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      padding: 6px 14px;
+      border-radius: 8px;
+    }
+
+    .clock-label-hdr {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+    }
+
+    .clock-val-hdr {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.88rem;
+      color: var(--arcade-cyan);
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+    }
+
+    /* Main Grid Layout (3 Columns on Desktop) */
+    .main-workspace {
+      width: 100%;
+      max-width: 1120px;
+      display: grid;
+      grid-template-columns: 290px 1fr 290px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .main-workspace {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+      }
+    }
+
+    /* Side Cards - Elevated Contrast */
+    .side-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-title-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .card-icon {
+      font-size: 1.15rem;
+    }
+
+    .card-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.75rem;
+      color: var(--arcade-accent);
+      letter-spacing: 0.05em;
+    }
+
+    /* SRE Rank Box - Bright Contrast */
+    .rank-box {
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.15), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(74, 222, 128, 0.5);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+      box-shadow: inset 0 0 15px rgba(74, 222, 128, 0.1);
+    }
+
+    .rank-badge-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8rem;
+      color: var(--arcade-gold);
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+      margin-bottom: 4px;
+    }
+
+    .rank-desc-text {
+      font-size: 0.76rem;
+      color: #f1f5f9;
+      font-weight: 700;
+    }
+
+    /* Local Storage Stats List */
+    .local-stats-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .local-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111c24;
+      border: 1px solid #1e293b;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .local-stat-row.highlight-row {
+      background: rgba(74, 222, 128, 0.12);
+      border-color: rgba(74, 222, 128, 0.4);
+    }
+
+    .local-stat-label {
+      font-size: 0.74rem;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+
+    .local-stat-val {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.76rem;
+      color: #ffffff;
+    }
+
+    .local-stat-val.gold {
+      color: var(--arcade-gold);
+      text-shadow: 0 0 8px rgba(250, 204, 21, 0.5);
+    }
+
+    .local-stat-val.cyan {
+      color: var(--arcade-cyan);
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+    }
+
+    .btn-reset-data {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .btn-reset-data:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* History Table */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.73rem;
+      padding: 8px 10px;
+      background: #111c24;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+    }
+
+    .history-score {
+      font-family: 'Press Start 2P', monospace;
+      color: var(--arcade-accent);
+      font-size: 0.68rem;
+    }
+
+    .history-date {
+      color: #94a3b8;
+      font-size: 0.68rem;
+    }
+
+    /* Controls Guide List */
+    .controls-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      padding: 2px 0;
+    }
+
+    .key-caps {
+      display: flex;
+      gap: 4px;
+    }
+
+    kbd {
+      background: #1e293b;
+      border: 1px solid #4ade80;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.6);
+      border-radius: 5px;
+      padding: 3px 7px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .control-action {
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    /* Score Table Rules */
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.73rem;
+      padding: 7px 10px;
+      background: #111c24;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+    }
+
+    .rule-item.tetris-gold {
+      background: rgba(250, 204, 21, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.4);
+    }
+
+    .rule-name {
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .rule-pts {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.65rem;
+      color: var(--arcade-accent);
+    }
+
+    .rule-item.tetris-gold .rule-pts {
+      color: var(--arcade-gold);
+    }
+
+    /* CENTER ARCADE CABINET */
+    .arcade-machine {
+      width: 100%;
+      background: linear-gradient(180deg, #091710 0%, #030a06 100%);
+      border: 2px solid var(--arcade-accent);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(74, 222, 128, 0.25);
+    }
+
+    .arcade-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .arcade-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.82rem;
+      color: var(--arcade-accent);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+    }
+
+    .credit-badge {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      color: var(--arcade-gold);
+      background: rgba(250, 204, 21, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.5);
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
+    }
+
+    .arcade-game-layout {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .board-frame {
+      position: relative;
+      border: 2px solid #22c55e;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(34, 197, 94, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.95);
+      background: var(--arcade-bg);
+    }
+
+    /* CRT Scanline Overlay */
+    .board-frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      z-index: 5;
+    }
+
+    #tetris-canvas {
+      display: block;
+    }
+
+    /* Game Overlay Screen */
+    .arcade-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(4, 12, 8, 0.95);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      text-align: center;
+      padding: 16px;
+      z-index: 10;
+    }
+
+    .overlay-title-pixel {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.05rem;
+      color: var(--arcade-accent);
+      text-shadow: 0 0 12px var(--arcade-accent);
+    }
+
+    .overlay-desc-text {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .btn-arcade-start {
+      background: linear-gradient(135deg, #16a34a, #14532d);
+      color: #ffffff;
+      border: 2px solid #4ade80;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.78rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+      transition: all 0.2s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-arcade-start:hover {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 222, 128, 0.6);
+    }
+
+    /* Side Stats Column inside Machine */
+    .arcade-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 120px;
+    }
+
+    .stat-box {
+      background: #0d1f17;
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .stat-box.uptime-box {
+      border-color: rgba(250, 204, 21, 0.5);
+      background: rgba(250, 204, 21, 0.08);
+    }
+
+    .stat-label-pixel {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: #94a3b8;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .stat-val-pixel {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8rem;
+      color: var(--arcade-accent);
+    }
+
+    .stat-val-pixel.uptime-val {
+      color: #facc15;
+      text-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+    }
+
+    .mini-canvas-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+    }
+
+    /* Controls Bar */
+    .arcade-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .arcade-btn {
+      background: #112218;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: #f1f5f9;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .arcade-btn:hover {
+      background: rgba(74, 222, 128, 0.25);
+      border-color: #4ade80;
+      color: #4ade80;
+    }
+
+    /* Touch Controls Pad */
+    .touch-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+      width: 100%;
+    }
+
+    .t-btn {
+      background: #112218;
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      color: #ffffff;
+      padding: 12px 0;
+      border-radius: 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.72rem;
+      text-align: center;
+      touch-action: manipulation;
+      cursor: pointer;
+    }
+
+    .t-btn:active {
+      background: rgba(74, 222, 128, 0.4);
+      border-color: #4ade80;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-logo">
+      <svg class="logo-icon-svg" viewBox="0 0 24 24">
+        <rect x="2" y="3" width="20" height="6" rx="2" fill="#14532d" stroke="#4ade80" stroke-width="2"/>
+        <rect x="2" y="15" width="20" height="6" rx="2" fill="#14532d" stroke="#4ade80" stroke-width="2"/>
+        <circle cx="6" cy="6" r="1.5" fill="#38bdf8"/>
+        <circle cx="10" cy="6" r="1.5" fill="#4ade80"/>
+        <circle cx="6" cy="18" r="1.5" fill="#38bdf8"/>
+        <circle cx="10" cy="18" r="1.5" fill="#4ade80"/>
+      </svg>
+      <div class="logo-text-group">
+        <span class="logo-main">INFRA QUEST v2</span>
+        <span class="logo-sub">SRE / インフラエンジニア専用 キャパシティ管理＆スタックアーケード</span>
+      </div>
+    </div>
+
+    <div class="header-clock-box">
+      <span class="clock-label-hdr">SYS CLOCK</span>
+      <span class="clock-val-hdr" id="header-clock-val">00:00:00</span>
+    </div>
+  </header>
+
+  <!-- 3-Column Workspace -->
+  <div class="main-workspace">
+
+    <!-- LEFT SIDEBAR: SRE Stats & Saved Cluster Data -->
+    <aside class="side-card">
+      <div class="card-title-bar">
+        <span class="card-icon">⚙️</span>
+        <span class="card-title">SRE PROFILE</span>
+      </div>
+
+      <!-- SRE Engineer Rank Badge -->
+      <div class="rank-box">
+        <div class="rank-badge-text" id="rank-title">JUNIOR OPERATOR</div>
+        <div class="rank-desc-text" id="rank-sub">🔰 駆け出しインフラ運用担当者</div>
+      </div>
+
+      <!-- Local Stats Grid -->
+      <div class="local-stats-grid">
+        <div class="local-stat-row highlight-row">
+          <span class="local-stat-label">🏆 MAX RPS (最高負荷)</span>
+          <span class="local-stat-val gold" id="ls-highscore">0</span>
+        </div>
+
+        <div class="local-stat-row">
+          <span class="local-stat-label">🚀 サービスデプロイ回数</span>
+          <span class="local-stat-val" id="ls-games">0 回</span>
+        </div>
+
+        <div class="local-stat-row">
+          <span class="local-stat-label">🧹 GC解放ノード数</span>
+          <span class="local-stat-val cyan" id="ls-total-lines">0 Nodes</span>
+        </div>
+
+        <div class="local-stat-row">
+          <span class="local-stat-label">⏱️ 通算クラスタ稼働時間</span>
+          <span class="local-stat-val" id="ls-total-time">0分 0秒</span>
+        </div>
+
+        <div class="local-stat-row">
+          <span class="local-stat-label">⚡ 1デプロイ最大GC</span>
+          <span class="local-stat-val" id="ls-max-lines">0 Nodes</span>
+        </div>
+      </div>
+
+      <!-- Recent Deployment History -->
+      <div class="card-title-bar" style="margin-top: 6px;">
+        <span class="card-icon">📜</span>
+        <span class="card-title">DEPLOY LOGS</span>
+      </div>
+      <div class="history-list" id="history-list">
+        <div style="font-size: 0.72rem; color: #64748b; text-align: center; padding: 8px 0;">ログが存在しません</div>
+      </div>
+
+      <button class="btn-reset-data" id="btn-reset-storage">🗑️ クラスタログをパージ</button>
+    </aside>
+
+    <!-- CENTER: Arcade Machine -->
+    <main class="arcade-machine">
+      <div class="arcade-header">
+        <div class="arcade-title">RESOURCE TETRIS v2</div>
+        <div class="credit-badge">CLUSTER: ONLINE</div>
+      </div>
+      
+      <div class="arcade-game-layout">
+        <div class="board-frame">
+          <canvas id="tetris-canvas" width="220" height="440"></canvas>
+          
+          <div id="overlay" class="arcade-overlay">
+            <div id="overlay-title" class="overlay-title-pixel">INITIALIZE CLUSTER</div>
+            <div id="overlay-sub" class="overlay-desc-text">コンテナリソースを最適配置し<br>OOM-Killerの発生を防げ！</div>
+            <button class="btn-arcade-start" id="start-btn">DEPLOY PODS</button>
+          </div>
+        </div>
+
+        <!-- Arcade Side Stats Column -->
+        <div class="arcade-stats">
+          <!-- System Uptime -->
+          <div class="stat-box uptime-box">
+            <div class="stat-label-pixel">UPTIME</div>
+            <div class="stat-val-pixel uptime-val" id="game-time-val">00:00</div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label-pixel">STAGING</div>
+            <div class="mini-canvas-box">
+              <canvas id="hold-canvas" width="64" height="40"></canvas>
+            </div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label-pixel">QUEUE</div>
+            <div class="mini-canvas-box">
+              <canvas id="next1-canvas" width="64" height="40"></canvas>
+            </div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label-pixel">RPS (SCORE)</div>
+            <div class="stat-val-pixel" id="score-val">0</div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label-pixel">MAX RPS</div>
+            <div class="stat-val-pixel" id="high-val">0</div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-label-pixel">GC NODES</div>
+            <div class="stat-val-pixel" id="lines-val">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Bar -->
+      <div class="arcade-actions">
+        <button class="arcade-btn" id="reset-btn">再デプロイ</button>
+        <button class="arcade-btn" id="pause-btn">メンテ休止</button>
+        <button class="arcade-btn" id="sound-btn">BEEP: ON</button>
+      </div>
+
+      <!-- Touch Pad for Mobile -->
+      <div class="touch-pad">
+        <button class="t-btn" id="tp-hold">STAGING</button>
+        <button class="t-btn" id="tp-rot">回転</button>
+        <button class="t-btn" id="tp-drop">FAST DEPLOY</button>
+        <button class="t-btn" id="tp-left">←</button>
+        <button class="t-btn" id="tp-down">↓</button>
+        <button class="t-btn" id="tp-right">→</button>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: SRE Controls & Spec Rules -->
+    <aside class="side-card">
+      <div class="card-title-bar">
+        <span class="card-icon">⌨️</span>
+        <span class="card-title">SRE SHORTCUTS</span>
+      </div>
+
+      <div class="controls-list">
+        <div class="control-item">
+          <div class="key-caps"><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd></div>
+          <span class="control-action">Pod位置シフト</span>
+        </div>
+        <div class="control-item">
+          <div class="key-caps"><kbd>↑</kbd> / <kbd>W</kbd> <kbd>X</kbd></div>
+          <span class="control-action">Pod右回転</span>
+        </div>
+        <div class="control-item">
+          <div class="key-caps"><kbd>Z</kbd></div>
+          <span class="control-action">Pod左回転</span>
+        </div>
+        <div class="control-item">
+          <div class="key-caps"><kbd>↓</kbd> / <kbd>S</kbd></div>
+          <span class="control-action">ローリングドロップ</span>
+        </div>
+        <div class="control-item">
+          <div class="key-caps"><kbd>Space</kbd></div>
+          <span class="control-action">即時デプロイ</span>
+        </div>
+        <div class="control-item">
+          <div class="key-caps"><kbd>C</kbd> / <kbd>Shift</kbd></div>
+          <span class="control-action">STAGING退避</span>
+        </div>
+        <div class="control-item">
+          <div class="key-caps"><kbd>P</kbd></div>
+          <span class="control-action">メンテナンス中断</span>
+        </div>
+        <div class="control-item">
+          <div class="key-caps"><kbd>R</kbd></div>
+          <span class="control-action">クラスタ再起動</span>
+        </div>
+      </div>
+
+      <div class="card-title-bar" style="margin-top: 10px;">
+        <span class="card-icon">⚡</span>
+        <span class="card-title">INFRA CAPACITY</span>
+      </div>
+
+      <div class="rules-list">
+        <div class="rule-item">
+          <span class="rule-name">1 Block GC</span>
+          <span class="rule-pts">+100 × Node</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-name">2 Block GC</span>
+          <span class="rule-pts">+300 × Node</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-name">3 Block GC</span>
+          <span class="rule-pts">+500 × Node</span>
+        </div>
+        <div class="rule-item tetris-gold">
+          <span class="rule-name">K8s AUTO-SCALE (4)</span>
+          <span class="rule-pts">+800 × Node</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-name">Pipeline Combo</span>
+          <span class="rule-pts">+50 × Combo</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-name">Fast Deploy</span>
+          <span class="rule-pts">+2 / Dist</span>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. システムクロック (Sys Clock)
+    // =========================================================================
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      const hdrClock = document.getElementById('header-clock-val');
+      if (hdrClock) hdrClock.textContent = `${h}:${m}:${s}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // =========================================================================
+    // 2. インフラエンジニア LocalStorage Manager
+    // =========================================================================
+    const STORAGE_KEY = 'infra_quest_tetris_v2_data';
+
+    let playerData = {
+      highScore: 0,
+      gamesPlayed: 0,
+      totalLines: 0,
+      totalPlayTime: 0,
+      maxLines: 0,
+      history: []
+    };
+
+    function loadPlayerData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          playerData = JSON.parse(saved);
+        } else {
+          const oldHigh = localStorage.getItem('sqlquest_high_score');
+          if (oldHigh) playerData.highScore = parseInt(oldHigh) || 0;
+        }
+      } catch (e) {
+        console.error('LocalStorage load failed', e);
+      }
+      renderPlayerDataUI();
+    }
+
+    function savePlayerData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(playerData));
+      } catch (e) {
+        console.error('LocalStorage save failed', e);
+      }
+      renderPlayerDataUI();
+    }
+
+    function getRankInfo(data) {
+      const score = (data && data.highScore) || 0;
+      const games = (data && data.gamesPlayed) || 0;
+      const lines = (data && data.totalLines) || 0;
+
+      if (score >= 40000 || games >= 100 || lines >= 1000) {
+        return { title: 'GRAND SRE LEGEND', desc: '🏆 殿堂入りSite Reliability Engineer', color: '#facc15' };
+      }
+      if (score >= 25000 || games >= 50 || lines >= 500) {
+        return { title: 'INFRA GUARDIAN', desc: '👑 インフラと可用性の守護神', color: '#4ade80' };
+      }
+      if (score >= 15000 || games >= 30 || lines >= 250) {
+        return { title: 'CLOUD ARCHITECT', desc: '☁️ マルチクラウド・アーキテクト', color: '#f97316' };
+      }
+      if (score >= 8000 || games >= 15 || lines >= 100) {
+        return { title: 'SRE SPECIALIST', desc: '⚡ 障害即時復旧のSREスペシャリスト', color: '#38bdf8' };
+      }
+      if (score >= 3000 || games >= 8 || lines >= 30) {
+        return { title: 'DEVOPS ENGINEER', desc: '🌟 自動化を愛するDevOpsエンジニア', color: '#a855f7' };
+      }
+      if (score >= 1000 || games >= 3 || lines >= 10) {
+        return { title: 'SYSADMIN APPRENTICE', desc: '🌱 見習いシステム管理者', color: '#67e8f9' };
+      }
+      return { title: 'JUNIOR OPERATOR', desc: '🔰 駆け出しインフラ運用担当者', color: '#94a3b8' };
+    }
+
+    function renderPlayerDataUI() {
+      const rank = getRankInfo(playerData);
+      const rankTitleEl = document.getElementById('rank-title');
+      const rankSubEl = document.getElementById('rank-sub');
+      if (rankTitleEl) {
+        rankTitleEl.textContent = rank.title;
+        rankTitleEl.style.color = rank.color;
+      }
+      if (rankSubEl) rankSubEl.textContent = rank.desc;
+
+      document.getElementById('ls-highscore').textContent = playerData.highScore.toLocaleString() + ' RPS';
+      document.getElementById('high-val').textContent = playerData.highScore;
+      document.getElementById('ls-games').textContent = `${playerData.gamesPlayed} 回`;
+      document.getElementById('ls-total-lines').textContent = `${playerData.totalLines} Nodes`;
+      document.getElementById('ls-max-lines').textContent = `${playerData.maxLines} Nodes`;
+
+      const totM = Math.floor(playerData.totalPlayTime / 60);
+      const totS = playerData.totalPlayTime % 60;
+      document.getElementById('ls-total-time').textContent = `${totM}分 ${totS}秒`;
+
+      const historyListEl = document.getElementById('history-list');
+      if (historyListEl) {
+        if (!playerData.history || playerData.history.length === 0) {
+          historyListEl.innerHTML = `<div style="font-size: 0.72rem; color: #64748b; text-align: center; padding: 8px 0;">ログが存在しません</div>`;
+        } else {
+          historyListEl.innerHTML = playerData.history.map(item => `
+            <div class="history-item">
+              <span class="history-score">${item.score.toLocaleString()} RPS (${item.lines}GC)</span>
+              <span class="history-date">${item.dateStr || ''}</span>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    document.getElementById('btn-reset-storage').addEventListener('click', () => {
+      if (confirm('クラスタに記録されたすべてのインフラ運用ログ・最高RPS記録をパージ（削除）しますか？')) {
+        playerData = { highScore: 0, gamesPlayed: 0, totalLines: 0, totalPlayTime: 0, maxLines: 0, history: [] };
+        savePlayerData();
+        alert('クラスタログをパージしました。');
+      }
+    });
+
+    loadPlayerData();
+
+    // =========================================================================
+    // 3. インフラ・コンテナ テトリスエンジン & 8-Bit WebAudio Synth
+    // =========================================================================
+    const COLS = 10;
+    const ROWS = 20;
+    const BLOCK_SIZE = 22;
+
+    const canvas = document.getElementById('tetris-canvas');
+    const ctx = canvas.getContext('2d');
+    const holdCanvas = document.getElementById('hold-canvas');
+    const holdCtx = holdCanvas.getContext('2d');
+    const next1Canvas = document.getElementById('next1-canvas');
+    const next1Ctx = next1Canvas.getContext('2d');
+
+    const scoreEl = document.getElementById('score-val');
+    const highEl = document.getElementById('high-val');
+    const linesEl = document.getElementById('lines-val');
+    const gameTimeEl = document.getElementById('game-time-val');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const overlaySub = document.getElementById('overlay-sub');
+    const startBtn = document.getElementById('start-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const soundBtn = document.getElementById('sound-btn');
+
+    let playTimeSeconds = 0;
+    let playTimerInterval = null;
+
+    function updatePlayTimeDisplay() {
+      const m = String(Math.floor(playTimeSeconds / 60)).padStart(2, '0');
+      const s = String(playTimeSeconds % 60).padStart(2, '0');
+      gameTimeEl.textContent = `${m}:${s}`;
+    }
+
+    function startPlayTimer() {
+      if (playTimerInterval) clearInterval(playTimerInterval);
+      playTimerInterval = setInterval(() => {
+        if (gameStarted && !paused && !gameOver) {
+          playTimeSeconds++;
+          updatePlayTimeDisplay();
+        }
+      }, 1000);
+    }
+
+    function stopPlayTimer() {
+      if (playTimerInterval) clearInterval(playTimerInterval);
+    }
+
+    // High Saturation Vivid Neon Color Palette
+    const SHAPES = {
+      I: { matrix: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], color: '#06b6d4', light: '#67e8f9', dark: '#0891b2' },
+      J: { matrix: [[1,0,0],[1,1,1],[0,0,0]], color: '#3b82f6', light: '#93c5fd', dark: '#1d4ed8' },
+      L: { matrix: [[0,0,1],[1,1,1],[0,0,0]], color: '#f97316', light: '#fdba74', dark: '#ea580c' },
+      O: { matrix: [[1,1],[1,1]], color: '#eab308', light: '#fde047', dark: '#ca8a04' },
+      S: { matrix: [[0,1,1],[1,1,0],[0,0,0]], color: '#22c55e', light: '#86efac', dark: '#16a34a' },
+      T: { matrix: [[0,1,0],[1,1,1],[0,0,0]], color: '#a855f7', light: '#d8b4fe', dark: '#9333ea' },
+      Z: { matrix: [[1,1,0],[0,1,1],[0,0,0]], color: '#ef4444', light: '#fca5a5', dark: '#dc2626' }
+    };
+
+    const SHAPE_KEYS = Object.keys(SHAPES);
+
+    let board = createMatrix(ROWS, COLS);
+    let score = 0;
+    let lines = 0;
+    let level = 1;
+    let combo = -1;
+
+    let gameOver = false;
+    let paused = false;
+    let gameStarted = false;
+
+    let currentPiece = null;
+    let nextQueue = [];
+    let holdPiece = null;
+    let canHold = true;
+
+    let dropCounter = 0;
+    let dropInterval = 1000;
+    let lockTimer = 0;
+    const LOCK_DELAY = 500;
+
+    let lastTime = 0;
+    let animId = null;
+    let particles = [];
+    let floatingTexts = [];
+    let shakeAmount = 0;
+
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function createMatrix(r, c) {
+      return Array.from({ length: r }, () => Array(c).fill(0));
+    }
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+
+        if (type === 'move') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(280, now);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.start(now); osc.stop(now + 0.04);
+        } else if (type === 'rotate') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(600, now + 0.06);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.start(now); osc.stop(now + 0.06);
+        } else if (type === 'drop') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now); osc.stop(now + 0.08);
+        } else if (type === 'clear') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.06);
+          osc.frequency.setValueAtTime(783.99, now + 0.12);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now); osc.stop(now + 0.25);
+        } else if (type === 'gameover') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.linearRampToValueAtTime(100, now + 0.4);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.start(now); osc.stop(now + 0.4);
+        }
+      } catch (e) {}
+    }
+
+    function spawnParticles(x, y, color, count = 10) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x * BLOCK_SIZE + BLOCK_SIZE / 2,
+          y: y * BLOCK_SIZE + BLOCK_SIZE / 2,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6 - 1,
+          color,
+          size: Math.random() * 4 + 2,
+          alpha: 1
+        });
+      }
+    }
+
+    function addFloatingText(text, color = '#4ade80') {
+      floatingTexts.push({
+        text, x: canvas.width / 2, y: canvas.height / 2, color, alpha: 1, vy: -1.2
+      });
+    }
+
+    let bag = [];
+    function getNextFromBag() {
+      if (bag.length === 0) bag = [...SHAPE_KEYS].sort(() => Math.random() - 0.5);
+      const key = bag.pop();
+      return {
+        key,
+        matrix: SHAPES[key].matrix.map(row => [...row]),
+        color: SHAPES[key].color, light: SHAPES[key].light, dark: SHAPES[key].dark,
+        x: Math.floor((COLS - SHAPES[key].matrix[0].length) / 2), y: 0
+      };
+    }
+
+    function fillQueue() {
+      while (nextQueue.length < 2) nextQueue.push(getNextFromBag());
+    }
+
+    function resetGame() {
+      board = createMatrix(ROWS, COLS);
+      score = 0; lines = 0; level = 1; combo = -1;
+      dropInterval = 1000;
+      gameOver = false; paused = false; holdPiece = null; canHold = true;
+      particles = []; floatingTexts = []; bag = []; nextQueue = [];
+      fillQueue();
+
+      playTimeSeconds = 0;
+      updatePlayTimeDisplay();
+      startPlayTimer();
+
+      updateStats();
+      spawnPiece();
+
+      overlay.style.display = 'none';
+      gameStarted = true;
+      lastTime = performance.now();
+      if (animId) cancelAnimationFrame(animId);
+      animId = requestAnimationFrame(update);
+    }
+
+    function spawnPiece() {
+      currentPiece = nextQueue.shift();
+      fillQueue();
+      canHold = true;
+      lockTimer = 0;
+
+      if (collide(board, currentPiece)) {
+        stopPlayTimer();
+        gameOver = true;
+        gameStarted = false;
+        playSound('gameover');
+
+        recordGameCompletion();
+
+        overlayTitle.textContent = 'CRASH: OOM-KILLER!';
+        overlaySub.textContent = `UPTIME: ${gameTimeEl.textContent} | MAX RPS: ${score}`;
+        startBtn.textContent = 'RESTART PODS';
+        overlay.style.display = 'flex';
+      }
+
+      drawPreview(next1Ctx, nextQueue[0], 10);
+      drawPreview(holdCtx, holdPiece, 10);
+    }
+
+    function recordGameCompletion() {
+      playerData.gamesPlayed += 1;
+      playerData.totalLines += lines;
+      playerData.totalPlayTime += playTimeSeconds;
+      if (lines > playerData.maxLines) playerData.maxLines = lines;
+
+      if (score > playerData.highScore) {
+        playerData.highScore = score;
+      }
+
+      const now = new Date();
+      const dateStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      if (!playerData.history) playerData.history = [];
+      playerData.history.unshift({
+        score: score,
+        lines: lines,
+        timeStr: gameTimeEl.textContent,
+        dateStr: dateStr
+      });
+      if (playerData.history.length > 5) playerData.history.pop();
+
+      savePlayerData();
+    }
+
+    function collide(board, piece) {
+      const m = piece.matrix;
+      for (let y = 0; y < m.length; y++) {
+        for (let x = 0; x < m[y].length; x++) {
+          if (m[y][x] !== 0) {
+            const bx = piece.x + x;
+            const by = piece.y + y;
+            if (bx < 0 || bx >= COLS || by >= ROWS || (by >= 0 && board[by][bx] !== 0)) return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function merge(board, piece) {
+      piece.matrix.forEach((row, y) => {
+        row.forEach((val, x) => {
+          if (val !== 0 && piece.y + y >= 0) {
+            board[piece.y + y][piece.x + x] = { color: piece.color, light: piece.light, dark: piece.dark };
+          }
+        });
+      });
+    }
+
+    function rotateMatrix(matrix, dir) {
+      const res = matrix.map((_, i) => matrix.map(col => col[i]));
+      return dir > 0 ? res.map(row => row.reverse()) : res.reverse();
+    }
+
+    function playerRotate(dir) {
+      if (!gameStarted || paused || gameOver) return;
+      initAudio();
+      const oldM = currentPiece.matrix;
+      currentPiece.matrix = rotateMatrix(currentPiece.matrix, dir);
+      let offset = 1;
+      const pos = currentPiece.x;
+      while (collide(board, currentPiece)) {
+        currentPiece.x += offset;
+        offset = -(offset + (offset > 0 ? 1 : -1));
+        if (offset > currentPiece.matrix[0].length) {
+          currentPiece.matrix = oldM;
+          currentPiece.x = pos;
+          return;
+        }
+      }
+      playSound('rotate');
+    }
+
+    function playerMove(dir) {
+      if (!gameStarted || paused || gameOver) return;
+      initAudio();
+      currentPiece.x += dir;
+      if (collide(board, currentPiece)) currentPiece.x -= dir;
+      else playSound('move');
+    }
+
+    function playerDrop() {
+      if (!gameStarted || paused || gameOver) return;
+      initAudio();
+      currentPiece.y++;
+      if (collide(board, currentPiece)) {
+        currentPiece.y--;
+        lockAndSpawn();
+      } else {
+        score += 1;
+        updateStats();
+      }
+      dropCounter = 0;
+    }
+
+    function hardDrop() {
+      if (!gameStarted || paused || gameOver) return;
+      initAudio();
+      let dropDist = 0;
+      while (!collide(board, currentPiece)) {
+        currentPiece.y++;
+        dropDist++;
+      }
+      currentPiece.y--;
+      score += dropDist * 2;
+      shakeAmount = 4;
+      playSound('drop');
+      lockAndSpawn();
+      dropCounter = 0;
+    }
+
+    function playerHold() {
+      if (!gameStarted || paused || gameOver || !canHold) return;
+      initAudio();
+      canHold = false;
+      playSound('rotate');
+
+      if (!holdPiece) {
+        holdPiece = { key: currentPiece.key, matrix: SHAPES[currentPiece.key].matrix.map(r => [...r]), color: SHAPES[currentPiece.key].color, light: SHAPES[currentPiece.key].light, dark: SHAPES[currentPiece.key].dark };
+        spawnPiece();
+      } else {
+        const tempKey = currentPiece.key;
+        currentPiece = { key: holdPiece.key, matrix: SHAPES[holdPiece.key].matrix.map(r => [...r]), color: SHAPES[holdPiece.key].color, light: SHAPES[holdPiece.key].light, dark: SHAPES[holdPiece.key].dark, x: Math.floor((COLS - SHAPES[holdPiece.key].matrix[0].length) / 2), y: 0 };
+        holdPiece = { key: tempKey, matrix: SHAPES[tempKey].matrix.map(r => [...r]), color: SHAPES[tempKey].color, light: SHAPES[tempKey].light, dark: SHAPES[tempKey].dark };
+      }
+      drawPreview(holdCtx, holdPiece, 10);
+    }
+
+    function lockAndSpawn() {
+      merge(board, currentPiece);
+      clearLines();
+      spawnPiece();
+    }
+
+    function clearLines() {
+      let cleared = 0;
+      for (let y = ROWS - 1; y >= 0; y--) {
+        if (board[y].every(cell => cell !== 0)) {
+          for (let x = 0; x < COLS; x++) spawnParticles(x, y, board[y][x].color, 5);
+          board.splice(y, 1);
+          board.unshift(Array(COLS).fill(0));
+          cleared++; y++;
+        }
+      }
+
+      if (cleared > 0) {
+        combo++;
+        lines += cleared;
+        const lineScores = [0, 100, 300, 500, 800];
+        let baseScore = lineScores[cleared] || 800;
+
+        if (cleared === 4) {
+          addFloatingText('K8S AUTO-SCALE! +800', '#38bdf8');
+          shakeAmount = 8;
+          playSound('clear');
+        } else {
+          addFloatingText(`GC +${baseScore * level}`, '#4ade80');
+          playSound('clear');
+        }
+
+        if (combo > 0) {
+          baseScore += combo * 50;
+          addFloatingText(`PIPELINE x${combo}!`, '#facc15');
+        }
+
+        score += baseScore * level;
+        level = Math.floor(lines / 10) + 1;
+        dropInterval = Math.max(80, 1000 - (level - 1) * 85);
+        updateStats();
+      } else {
+        combo = -1;
+      }
+    }
+
+    function updateStats() {
+      scoreEl.textContent = score;
+      linesEl.textContent = lines;
+
+      if (score > playerData.highScore) {
+        playerData.highScore = score;
+        savePlayerData();
+      }
+    }
+
+    function drawBlock(c, x, y, colorObj, isGhost = false) {
+      const px = x * BLOCK_SIZE;
+      const py = y * BLOCK_SIZE;
+      const color = typeof colorObj === 'string' ? colorObj : colorObj.color;
+      const light = typeof colorObj === 'string' ? '#ffffff' : (colorObj.light || '#ffffff');
+      const dark = typeof colorObj === 'string' ? 'rgba(0,0,0,0.5)' : (colorObj.dark || 'rgba(0,0,0,0.5)');
+
+      if (isGhost) {
+        c.strokeStyle = color; c.lineWidth = 2;
+        c.setLineDash([3, 3]);
+        c.strokeRect(px + 1, py + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
+        c.setLineDash([]);
+        return;
+      }
+
+      // Crisp Block Fill & Bevel
+      c.fillStyle = color;
+      c.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
+      
+      // Top/Left highlight
+      c.fillStyle = light;
+      c.globalAlpha = 0.35;
+      c.fillRect(px, py, BLOCK_SIZE, 3);
+      c.fillRect(px, py, 3, BLOCK_SIZE);
+
+      // Bottom/Right shadow
+      c.fillStyle = dark;
+      c.globalAlpha = 0.45;
+      c.fillRect(px, py + BLOCK_SIZE - 3, BLOCK_SIZE, 3);
+      c.fillRect(px + BLOCK_SIZE - 3, py, 3, BLOCK_SIZE);
+
+      c.globalAlpha = 1.0;
+      c.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+      c.lineWidth = 1;
+      c.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
+    }
+
+    function draw() {
+      ctx.save();
+      if (shakeAmount > 0) {
+        ctx.translate((Math.random() - 0.5) * shakeAmount, (Math.random() - 0.5) * shakeAmount);
+        shakeAmount *= 0.85;
+      }
+
+      ctx.fillStyle = '#040a07';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Higher-visibility Grid Lines
+      ctx.strokeStyle = 'rgba(74, 222, 128, 0.14)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= COLS; x++) { ctx.beginPath(); ctx.moveTo(x * BLOCK_SIZE, 0); ctx.lineTo(x * BLOCK_SIZE, canvas.height); ctx.stroke(); }
+      for (let y = 0; y <= ROWS; y++) { ctx.beginPath(); ctx.moveTo(0, y * BLOCK_SIZE); ctx.lineTo(canvas.width, y * BLOCK_SIZE); ctx.stroke(); }
+
+      for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+          if (board[y][x] !== 0) drawBlock(ctx, x, y, board[y][x]);
+        }
+      }
+
+      if (currentPiece && !gameOver) {
+        const ghost = { ...currentPiece, y: currentPiece.y };
+        while (!collide(board, ghost)) ghost.y++;
+        ghost.y--;
+        ghost.matrix.forEach((row, y) => {
+          row.forEach((val, x) => {
+            if (val !== 0 && ghost.y + y >= 0) drawBlock(ctx, ghost.x + x, ghost.y + y, currentPiece.color, true);
+          });
+        });
+
+        currentPiece.matrix.forEach((row, y) => {
+          row.forEach((val, x) => {
+            if (val !== 0 && currentPiece.y + y >= 0) drawBlock(ctx, currentPiece.x + x, currentPiece.y + y, currentPiece);
+          });
+        });
+      }
+
+      // Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy; p.alpha -= 0.03;
+        if (p.alpha <= 0) { particles.splice(i, 1); continue; }
+        ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+      ctx.globalAlpha = 1;
+
+      // Floating Score
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        ft.y += ft.vy; ft.alpha -= 0.02;
+        if (ft.alpha <= 0) { floatingTexts.splice(i, 1); continue; }
+        ctx.font = 'bold 11px "Press Start 2P", monospace';
+        ctx.fillStyle = ft.color; ctx.globalAlpha = ft.alpha;
+        ctx.textAlign = 'center';
+        ctx.fillText(ft.text, ft.x, ft.y);
+      }
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
+    function drawPreview(pCtx, piece, size = 10) {
+      pCtx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      pCtx.fillRect(0, 0, pCtx.canvas.width, pCtx.canvas.height);
+      if (!piece) return;
+      const m = piece.matrix;
+      const offsetX = Math.floor((pCtx.canvas.width - m[0].length * size) / 2);
+      const offsetY = Math.floor((pCtx.canvas.height - m.length * size) / 2);
+
+      m.forEach((row, y) => {
+        row.forEach((val, x) => {
+          if (val !== 0) {
+            pCtx.fillStyle = piece.color;
+            pCtx.fillRect(offsetX + x * size, offsetY + y * size, size, size);
+          }
+        });
+      });
+    }
+
+    function update(time = 0) {
+      if (!gameStarted || paused || gameOver) return;
+      const dt = time - lastTime;
+      lastTime = time;
+
+      dropCounter += dt;
+      if (dropCounter > dropInterval) {
+        currentPiece.y++;
+        if (collide(board, currentPiece)) {
+          currentPiece.y--;
+          lockTimer += dt;
+          if (lockTimer > LOCK_DELAY) lockAndSpawn();
+        } else {
+          lockTimer = 0;
+        }
+        dropCounter = 0;
+      }
+
+      draw();
+      animId = requestAnimationFrame(update);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (!gameStarted || gameOver) {
+        if (e.code === 'Space' || e.code === 'KeyR') { e.preventDefault(); resetGame(); }
+        return;
+      }
+      if (e.code === 'KeyP') { e.preventDefault(); togglePause(); return; }
+      if (e.code === 'KeyR') { e.preventDefault(); initAudio(); resetGame(); return; }
+      if (paused) return;
+
+      switch (e.code) {
+        case 'ArrowLeft': case 'KeyA': e.preventDefault(); playerMove(-1); break;
+        case 'ArrowRight': case 'KeyD': e.preventDefault(); playerMove(1); break;
+        case 'ArrowDown': case 'KeyS': e.preventDefault(); playerDrop(); break;
+        case 'ArrowUp': case 'KeyW': case 'KeyX': e.preventDefault(); playerRotate(1); break;
+        case 'KeyZ': e.preventDefault(); playerRotate(-1); break;
+        case 'Space': e.preventDefault(); hardDrop(); break;
+        case 'KeyC': case 'ShiftLeft': e.preventDefault(); playerHold(); break;
+      }
+      draw();
+    });
+
+    function togglePause() {
+      if (!gameStarted || gameOver) return;
+      paused = !paused;
+      if (paused) {
+        overlayTitle.textContent = 'DOWNTIME (PAUSED)';
+        overlaySub.textContent = 'Pキーまたはボタンでサービス再開';
+        startBtn.textContent = 'RESUME SERVICE';
+        overlay.style.display = 'flex';
+      } else {
+        overlay.style.display = 'none';
+        lastTime = performance.now();
+        animId = requestAnimationFrame(update);
+      }
+    }
+
+    startBtn.addEventListener('click', () => {
+      initAudio();
+      if (!gameStarted || gameOver) resetGame();
+      else if (paused) togglePause();
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        initAudio();
+        resetGame();
+      });
+    }
+
+    pauseBtn.addEventListener('click', togglePause);
+    soundBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      soundBtn.textContent = soundEnabled ? 'BEEP: ON' : 'BEEP: OFF';
+    });
+
+    document.getElementById('tp-left').addEventListener('click', () => playerMove(-1));
+    document.getElementById('tp-right').addEventListener('click', () => playerMove(1));
+    document.getElementById('tp-down').addEventListener('click', () => playerDrop());
+    document.getElementById('tp-rot').addEventListener('click', () => playerRotate(1));
+    document.getElementById('tp-drop').addEventListener('click', () => hardDrop());
+    document.getElementById('tp-hold').addEventListener('click', () => playerHold());
+
+    draw();
+  </script>
+</body>
+</html>
