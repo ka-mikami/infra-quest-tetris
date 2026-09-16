@@ -605,8 +605,8 @@
         <circle cx="10" cy="18" r="1.5" fill="#4ade80"/>
       </svg>
       <div class="logo-text-group">
-        <span class="logo-main">INFRA QUEST v2</span>
-        <span class="logo-sub">SRE / インフラエンジニア専用 キャパシティ管理＆スタックアーケード</span>
+        <span class="logo-main">DEV QUEST v2</span>
+        <span class="logo-sub"><span style="display:inline-block;">バグを出さずにリリースを目指せ！</span><span style="display:inline-block;">開発エンジニア向けテトリス</span></span>
       </div>
     </div>
 
@@ -623,40 +623,40 @@
     <aside class="side-card">
       <div class="card-title-bar">
         <span class="card-icon">⚙️</span>
-        <span class="card-title">SRE PROFILE</span>
+        <span class="card-title">DEV PROFILE</span>
       </div>
 
       <!-- SRE Engineer Rank Badge -->
       <div class="rank-box">
-        <div class="rank-badge-text" id="rank-title">JUNIOR OPERATOR</div>
-        <div class="rank-desc-text" id="rank-sub">🔰 駆け出しインフラ運用担当者</div>
+        <div class="rank-badge-text" id="rank-title">TUTORIAL GRADUATE</div>
+        <div class="rank-desc-text" id="rank-sub">🔰 Hello World突破レベル</div>
       </div>
 
       <!-- Local Stats Grid -->
       <div class="local-stats-grid">
         <div class="local-stat-row highlight-row">
-          <span class="local-stat-label">🏆 MAX RPS (最高負荷)</span>
+          <span class="local-stat-label">🏆 MAX SCORE (最高スコア)</span>
           <span class="local-stat-val gold" id="ls-highscore">0</span>
         </div>
 
         <div class="local-stat-row">
-          <span class="local-stat-label">🚀 サービスデプロイ回数</span>
+          <span class="local-stat-label">🚀 デプロイ実行回数</span>
           <span class="local-stat-val" id="ls-games">0 回</span>
         </div>
 
         <div class="local-stat-row">
-          <span class="local-stat-label">🧹 GC解放ノード数</span>
-          <span class="local-stat-val cyan" id="ls-total-lines">0 Nodes</span>
+          <span class="local-stat-label">🧹 累計消去ライン</span>
+          <span class="local-stat-val cyan" id="ls-total-lines">0 行</span>
         </div>
 
         <div class="local-stat-row">
-          <span class="local-stat-label">⏱️ 通算クラスタ稼働時間</span>
+          <span class="local-stat-label">⏱️ 通算プレイ時間</span>
           <span class="local-stat-val" id="ls-total-time">0分 0秒</span>
         </div>
 
         <div class="local-stat-row">
-          <span class="local-stat-label">⚡ 1デプロイ最大GC</span>
-          <span class="local-stat-val" id="ls-max-lines">0 Nodes</span>
+          <span class="local-stat-label">⚡ 1ゲーム最多ライン</span>
+          <span class="local-stat-val" id="ls-max-lines">0 行</span>
         </div>
       </div>
 
@@ -669,14 +669,14 @@
         <div style="font-size: 0.72rem; color: #64748b; text-align: center; padding: 8px 0;">ログが存在しません</div>
       </div>
 
-      <button class="btn-reset-data" id="btn-reset-storage">🗑️ クラスタログをパージ</button>
+      <button class="btn-reset-data" id="btn-reset-storage">🗑️ 開発ログをリセット</button>
     </aside>
 
     <!-- CENTER: Arcade Machine -->
     <main class="arcade-machine">
       <div class="arcade-header">
         <div class="arcade-title">RESOURCE TETRIS v2</div>
-        <div class="credit-badge">CLUSTER: ONLINE</div>
+        <div class="credit-badge">SYSTEM: ONLINE</div>
       </div>
       
       <div class="arcade-game-layout">
@@ -684,9 +684,12 @@
           <canvas id="tetris-canvas" width="220" height="440"></canvas>
           
           <div id="overlay" class="arcade-overlay">
-            <div id="overlay-title" class="overlay-title-pixel">INITIALIZE CLUSTER</div>
-            <div id="overlay-sub" class="overlay-desc-text">コンテナリソースを最適配置し<br>OOM-Killerの発生を防げ！</div>
-            <button class="btn-arcade-start" id="start-btn">DEPLOY PODS</button>
+            <div id="overlay-title" class="overlay-title-pixel">READY TO DEPLOY</div>
+            <div id="overlay-sub" class="overlay-desc-text">
+              ブロックを積み上げてバグを防げ！<br>
+              エラーゼロでリリース完了を目指そう！
+            </div>
+            <button class="btn-arcade-start" id="start-btn">本番デプロイ</button>
           </div>
         </div>
 
@@ -883,24 +886,24 @@
       const lines = (data && data.totalLines) || 0;
 
       if (score >= 40000 || games >= 100 || lines >= 1000) {
-        return { title: 'GRAND SRE LEGEND', desc: '🏆 殿堂入りSite Reliability Engineer', color: '#facc15' };
+        return { title: 'LEGEND ARCHITECT', desc: '🏆 伝説のフルスタックエンジニア', color: '#facc15' };
       }
       if (score >= 25000 || games >= 50 || lines >= 500) {
-        return { title: 'INFRA GUARDIAN', desc: '👑 インフラと可用性の守護神', color: '#4ade80' };
+        return { title: 'TECH LEAD', desc: '👑 どんなバグも即解決するテックリード', color: '#4ade80' };
       }
       if (score >= 15000 || games >= 30 || lines >= 250) {
-        return { title: 'CLOUD ARCHITECT', desc: '☁️ マルチクラウド・アーキテクト', color: '#f97316' };
+        return { title: 'CODE REVIEWER', desc: '🔥 頼れる先輩エンジニア', color: '#f97316' };
       }
       if (score >= 8000 || games >= 15 || lines >= 100) {
-        return { title: 'SRE SPECIALIST', desc: '⚡ 障害即時復旧のSREスペシャリスト', color: '#38bdf8' };
+        return { title: 'GIT NINJA', desc: '⚡ コンフリクトを恐れないエンジニア', color: '#38bdf8' };
       }
       if (score >= 3000 || games >= 8 || lines >= 30) {
-        return { title: 'DEVOPS ENGINEER', desc: '🌟 自動化を愛するDevOpsエンジニア', color: '#a855f7' };
+        return { title: 'STACK OVERFLOW FAN', desc: '🌟 エラー検索＆解決の達人', color: '#a855f7' };
       }
       if (score >= 1000 || games >= 3 || lines >= 10) {
-        return { title: 'SYSADMIN APPRENTICE', desc: '🌱 見習いシステム管理者', color: '#67e8f9' };
+        return { title: 'LOCAL DEV', desc: '🌱 「自分のPCでは動く」エンジニア', color: '#67e8f9' };
       }
-      return { title: 'JUNIOR OPERATOR', desc: '🔰 駆け出しインフラ運用担当者', color: '#94a3b8' };
+      return { title: 'TUTORIAL GRADUATE', desc: '🔰 Hello World突破レベル', color: '#94a3b8' };
     }
 
     function renderPlayerDataUI() {
@@ -913,11 +916,11 @@
       }
       if (rankSubEl) rankSubEl.textContent = rank.desc;
 
-      document.getElementById('ls-highscore').textContent = playerData.highScore.toLocaleString() + ' RPS';
+      document.getElementById('ls-highscore').textContent = playerData.highScore.toLocaleString() + ' pts';
       document.getElementById('high-val').textContent = playerData.highScore;
       document.getElementById('ls-games').textContent = `${playerData.gamesPlayed} 回`;
-      document.getElementById('ls-total-lines').textContent = `${playerData.totalLines} Nodes`;
-      document.getElementById('ls-max-lines').textContent = `${playerData.maxLines} Nodes`;
+      document.getElementById('ls-total-lines').textContent = `${playerData.totalLines} 行`;
+      document.getElementById('ls-max-lines').textContent = `${playerData.maxLines} 行`;
 
       const totM = Math.floor(playerData.totalPlayTime / 60);
       const totS = playerData.totalPlayTime % 60;
@@ -1170,9 +1173,9 @@
 
         recordGameCompletion();
 
-        overlayTitle.textContent = 'CRASH: OOM-KILLER!';
-        overlaySub.textContent = `UPTIME: ${gameTimeEl.textContent} | MAX RPS: ${score}`;
-        startBtn.textContent = 'RESTART PODS';
+        overlayTitle.textContent = 'BUILD FAILED!';
+        overlaySub.innerHTML = `TIME: ${gameTimeEl.textContent} | SCORE: ${score} pts<br><span style="color:#fca5a5; font-size:0.72rem; display:block; margin-top:4px;">コンパイルエラー発生！バグを修正して再挑戦しよう</span>`;
+        startBtn.textContent = 'もう一度トライ';
         overlay.style.display = 'flex';
       }
 
@@ -1332,17 +1335,23 @@
         let baseScore = lineScores[cleared] || 800;
 
         if (cleared === 4) {
-          addFloatingText('K8S AUTO-SCALE! +800', '#38bdf8');
+          addFloatingText('⚡ K8sオートスケール！定時確定！ +800', '#38bdf8');
           shakeAmount = 8;
           playSound('clear');
+        } else if (cleared === 3) {
+          addFloatingText(`不要インスタンス停止! +${baseScore * level}`, '#4ade80');
+          playSound('clear');
+        } else if (cleared === 2) {
+          addFloatingText(`肥大化ログをパージ! +${baseScore * level}`, '#4ade80');
+          playSound('clear');
         } else {
-          addFloatingText(`GC +${baseScore * level}`, '#4ade80');
+          addFloatingText(`リファクタリング完了! +${baseScore * level}`, '#4ade80');
           playSound('clear');
         }
 
         if (combo > 0) {
           baseScore += combo * 50;
-          addFloatingText(`PIPELINE x${combo}!`, '#facc15');
+          addFloatingText(`パイプライン爆速キメた！ x${combo}`, '#facc15');
         }
 
         score += baseScore * level;
@@ -1529,9 +1538,9 @@
       if (!gameStarted || gameOver) return;
       paused = !paused;
       if (paused) {
-        overlayTitle.textContent = 'DOWNTIME (PAUSED)';
-        overlaySub.textContent = 'Pキーまたはボタンでサービス再開';
-        startBtn.textContent = 'RESUME SERVICE';
+        overlayTitle.textContent = 'SPEC CONFIRMATION';
+        overlaySub.innerHTML = `仕様書確認中<br><span style="color:#94a3b8; font-size:0.72rem; display:block; margin-top:4px;">(Slack離席中...)</span>`;
+        startBtn.textContent = '作業再開';
         overlay.style.display = 'flex';
       } else {
         overlay.style.display = 'none';
