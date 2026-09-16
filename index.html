@@ -10,16 +10,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-gradient-start: #040c12;
-      --bg-gradient-end: #091f17;
-      --card-bg: #0d171c;
-      --card-border: #1e293b;
-      --arcade-bg: #040a07;
-      --arcade-accent: #4ade80;
-      --arcade-gold: #facc15;
-      --arcade-cyan: #38bdf8;
-      --arcade-red: #ef4444;
-      --primary: #16a34a;
+      --bg-gradient-start: #091016;
+      --bg-gradient-end: #0e1a22;
+      --card-bg: #13202b;
+      --card-border: #223444;
+      --arcade-bg: #091310;
+      --arcade-accent: #34d399; /* Soft Emerald Green */
+      --arcade-gold: #fbbf24;   /* Soft Amber */
+      --arcade-cyan: #38bdf8;   /* Soft Sky Blue */
+      --arcade-red: #f87171;    /* Soft Rose Red */
+      --primary: #10b981;
       --radius-lg: 20px;
       --radius-md: 12px;
     }
@@ -39,9 +39,9 @@
       align-items: center;
       padding: 20px 16px 40px;
       font-family: 'JetBrains Mono', 'Outfit', 'Noto Sans JP', monospace;
-      background: radial-gradient(circle at 50% 25%, #0f3d29 0%, transparent 60%),
+      background: radial-gradient(circle at 50% 25%, #103325 0%, transparent 65%),
                   linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-      color: #f1f5f9;
+      color: #e2e8f0;
     }
 
     /* Top Application Header */
@@ -53,11 +53,11 @@
       justify-content: space-between;
       margin-bottom: 24px;
       padding: 14px 24px;
-      background: rgba(13, 23, 28, 0.92);
+      background: rgba(19, 32, 43, 0.95);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(74, 222, 128, 0.4);
+      border: 1px solid rgba(52, 211, 153, 0.3);
       border-radius: var(--radius-md);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 
     .header-logo {
@@ -589,9 +589,117 @@
       background: rgba(74, 222, 128, 0.4);
       border-color: #4ade80;
     }
+
+    /* Light Mode Theme Overrides */
+    body.light-mode {
+      --bg-gradient-start: #f1f5f9;
+      --bg-gradient-end: #e2e8f0;
+      --card-bg: #ffffff;
+      --card-border: #cbd5e1;
+      --arcade-bg: #091310;
+      --arcade-accent: #059669;
+      --arcade-gold: #d97706;
+      --arcade-cyan: #0284c7;
+      --arcade-red: #dc2626;
+      color: #1e293b;
+      background: radial-gradient(circle at 50% 25%, #d1fae5 0%, transparent 65%),
+                  linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    }
+
+    body.light-mode .app-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    body.light-mode .logo-sub {
+      color: #64748b;
+    }
+
+    body.light-mode .header-clock-box {
+      background: rgba(2, 132, 199, 0.08);
+      border-color: rgba(2, 132, 199, 0.3);
+    }
+
+    body.light-mode .side-card {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    body.light-mode .local-stat-row,
+    body.light-mode .history-item,
+    body.light-mode .rule-item {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .local-stat-label,
+    body.light-mode .history-date,
+    body.light-mode .rule-name {
+      color: #64748b;
+    }
+
+    body.light-mode .local-stat-val,
+    body.light-mode .control-action {
+      color: #0f172a;
+    }
+
+    body.light-mode .rank-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(5, 150, 105, 0.06));
+      border-color: #059669;
+    }
+
+    body.light-mode .rank-desc-text {
+      color: #1e293b;
+    }
+
+    body.light-mode kbd {
+      background: #ffffff;
+      border-color: #94a3b8;
+      color: #0f172a;
+      box-shadow: 0 2px 0 #cbd5e1;
+    }
+
+    body.light-mode .arcade-machine {
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+      border-color: #059669;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    body.light-mode .stat-box {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    body.light-mode .arcade-btn,
+    body.light-mode .t-btn {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+
+    .theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #f1f5f9;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 8px;
+    }
+
+    body.light-mode .theme-toggle-btn {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #0f172a;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
   </style>
 </head>
-<body>
+<body class="light-mode">
 
   <!-- App Header -->
   <header class="app-header">
@@ -613,6 +721,7 @@
     <div class="header-clock-box">
       <span class="clock-label-hdr">SYS CLOCK</span>
       <span class="clock-val-hdr" id="header-clock-val">00:00:00</span>
+      <button id="theme-toggle-btn" class="theme-toggle-btn">☀️ LIGHT MODE</button>
     </div>
   </header>
 
@@ -842,6 +951,30 @@
     updateClock();
     setInterval(updateClock, 1000);
 
+    // Theme Switcher Logic
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    let currentTheme = localStorage.getItem('infra_quest_theme') || 'light';
+
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        if (themeBtn) themeBtn.textContent = '🌙 DARK MODE';
+      } else {
+        document.body.classList.remove('light-mode');
+        if (themeBtn) themeBtn.textContent = '☀️ LIGHT MODE';
+      }
+    }
+
+    applyTheme(currentTheme);
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('infra_quest_theme', currentTheme);
+        applyTheme(currentTheme);
+      });
+    }
+
     // =========================================================================
     // 2. インフラエンジニア LocalStorage Manager
     // =========================================================================
@@ -1000,15 +1133,15 @@
       if (playTimerInterval) clearInterval(playTimerInterval);
     }
 
-    // High Saturation Vivid Neon Color Palette
+    // Soft & Muted Eye-Friendly Color Palette
     const SHAPES = {
-      I: { matrix: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], color: '#06b6d4', light: '#67e8f9', dark: '#0891b2' },
-      J: { matrix: [[1,0,0],[1,1,1],[0,0,0]], color: '#3b82f6', light: '#93c5fd', dark: '#1d4ed8' },
-      L: { matrix: [[0,0,1],[1,1,1],[0,0,0]], color: '#f97316', light: '#fdba74', dark: '#ea580c' },
-      O: { matrix: [[1,1],[1,1]], color: '#eab308', light: '#fde047', dark: '#ca8a04' },
-      S: { matrix: [[0,1,1],[1,1,0],[0,0,0]], color: '#22c55e', light: '#86efac', dark: '#16a34a' },
-      T: { matrix: [[0,1,0],[1,1,1],[0,0,0]], color: '#a855f7', light: '#d8b4fe', dark: '#9333ea' },
-      Z: { matrix: [[1,1,0],[0,1,1],[0,0,0]], color: '#ef4444', light: '#fca5a5', dark: '#dc2626' }
+      I: { matrix: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], color: '#38bdf8', light: '#7dd3fc', dark: '#0284c7' },
+      J: { matrix: [[1,0,0],[1,1,1],[0,0,0]], color: '#60a5fa', light: '#93c5fd', dark: '#2563eb' },
+      L: { matrix: [[0,0,1],[1,1,1],[0,0,0]], color: '#fb923c', light: '#fdba74', dark: '#ea580c' },
+      O: { matrix: [[1,1],[1,1]], color: '#fbbf24', light: '#fcd34d', dark: '#d97706' },
+      S: { matrix: [[0,1,1],[1,1,0],[0,0,0]], color: '#34d399', light: '#6ee7b7', dark: '#059669' },
+      T: { matrix: [[0,1,0],[1,1,1],[0,0,0]], color: '#c084fc', light: '#e9d5ff', dark: '#9333ea' },
+      Z: { matrix: [[1,1,0],[0,1,1],[0,0,0]], color: '#f87171', light: '#fca5a5', dark: '#dc2626' }
     };
 
     const SHAPE_KEYS = Object.keys(SHAPES);
